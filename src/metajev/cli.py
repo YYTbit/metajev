@@ -246,6 +246,29 @@ def cmd_doctor(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_report(args: argparse.Namespace) -> int:
+    from .report import render_html
+
+    with DecisionStore(args.store) as store:
+        if store.count() == 0:
+            print("no decisions in this store", file=sys.stderr)
+            return 1
+        policy = _load_policy(args)
+        page = render_html(
+            store,
+            title=args.title or f"metajev report for {args.store}",
+            on=args.on,
+            baseline=policy,
+            bins=args.bins,
+        )
+        with open(args.out, "w", encoding="utf-8") as handle:
+            handle.write(page)
+        size = len(page) / 1024
+        print(f"wrote {args.out} ({size:.1f} KB, {store.count()} decisions embedded)")
+        print("open it in a browser; the page makes no network requests")
+    return 0
+
+
 def cmd_export(args: argparse.Namespace) -> int:
     with DecisionStore(args.store) as store:
         written = store.export_jsonl(args.out)
@@ -351,6 +374,19 @@ def build_parser() -> argparse.ArgumentParser:
     doc.add_argument("--store", default=None)
     doc.add_argument("--ledger-path", default=None)
     doc.set_defaults(func=cmd_doctor)
+
+    rep = sub.add_parser("report", help="write a self-contained interactive HTML report")
+    rep.add_argument("--store", required=True)
+    rep.add_argument("--out", required=True, help="path to write the HTML to")
+    rep.add_argument("--title", default=None)
+    rep.add_argument("--on", default="confidence")
+    rep.add_argument("--bins", type=int, default=10)
+    rep.add_argument("--preset", default="balanced", choices=sorted(PRESETS))
+    rep.add_argument("--policy-file", default=None)
+    rep.add_argument("--label", default=None)
+    rep.add_argument("--accept", type=float, default=0.85)
+    rep.add_argument("--review", type=float, default=0.55)
+    rep.set_defaults(func=cmd_report)
 
     exp = sub.add_parser("export", help="write the store to JSONL")
     exp.add_argument("--store", required=True)

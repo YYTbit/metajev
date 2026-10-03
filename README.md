@@ -88,8 +88,18 @@ print(report.render())
 ## What a boundary change costs
 
 Moving a threshold is a trade, and a report that only counted what it caught would
-be advertising. `replay` reports both sides, from a run over 500 tickets where the
-model was judged once each and the truth was recorded afterwards:
+be advertising. The chart below is the whole trade, drawn from a history of 500
+tickets where each was judged once and the truth was recorded afterwards.
+
+![Coverage and precision against the accept boundary](docs/trade.svg)
+
+The blue line is how many decisions get accepted at each boundary. The green line
+is the precision among those. They cross around 0.70, which is where raising the
+boundary further stops buying accuracy and starts costing coverage. Everything in
+that picture is computed from recorded distributions, and nothing was called again
+to draw it.
+
+The same numbers in text, from the same run:
 
 ```
 policy strict (fingerprint 365bcbe2ca3c22d7)
@@ -195,6 +205,15 @@ it.
 Probabilities are useful when they can be read as frequencies. Point a client at a
 store where outcomes have been recorded and it will say whether they can.
 
+![Reliability curve](docs/reliability.svg)
+
+The bars are what actually happened; the dots are what the model said. When the
+dots sit above the bars, the model is reading more confident than it has earned.
+In this run it reads 0.148 hot, which is a real number produced by a simulated
+model that was built to be 0.15 hot. Detecting it is the point.
+
+
+
 ```
 calibration for confidence
   observations:      500
@@ -249,6 +268,7 @@ metajev ask "the invoice total is negative" \
     --question "Does this need a person?" --yes "a human should read this first" \
     --provider typesafe --store decisions.db
 
+metajev report    --store decisions.db --out report.html --accept 0.85
 metajev calibrate --store decisions.db --on confidence
 metajev sweep     --store decisions.db --values 0.6,0.7,0.8,0.9,0.95
 metajev replay    --store decisions.db --preset strict --baseline-preset balanced
@@ -259,6 +279,13 @@ metajev doctor --provider typesafe --store decisions.db
 
 `metajev ask` with `--provider mock` runs offline, which is the fastest way to check
 a question's wording before it goes into a pipeline.
+
+`metajev report` writes a single self-contained page with the calibration curve and
+a slider that moves the accept boundary across the whole history. The slider
+re-resolves every recorded decision in the browser, from numbers already on the
+page, which is the clearest way to see that a policy change costs nothing. The page
+makes no network requests, and since a decision stores a hash of its state rather
+than the state, no conversation content can appear in it.
 
 ## Design notes
 

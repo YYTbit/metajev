@@ -66,6 +66,7 @@ from .providers import (
     build_provider,
 )
 from .replay import Bucket, Flip, ReplayReport, compare, replay, sweep
+from .report import ReportInput, collect, render_html
 from .router import ProviderScore, RouteDecision, Router, score_providers
 from .store import DecisionStore, StoreStats
 from .types import (
@@ -112,6 +113,10 @@ __all__ = [
     "compare",
     "replay",
     "sweep",
+    # report
+    "ReportInput",
+    "collect",
+    "render_html",
     # calibration
     "Calibration",
     "Observation",
