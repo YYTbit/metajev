@@ -287,6 +287,35 @@ page, which is the clearest way to see that a policy change costs nothing. The p
 makes no network requests, and since a decision stores a hash of its state rather
 than the state, no conversation content can appear in it.
 
+## MCP server
+
+The same operations are available to any MCP client, so an agent gets the
+separation a program does. It can ask a typed question, record what actually
+happened, and then try a different threshold over the whole history without paying
+for another model call.
+
+```sh
+pip install "metajev[mcp]"
+metajev-mcp --check        # verify the wiring before adding it to a client
+```
+
+Configuration is by environment variable, since an MCP client launches the server
+as a subprocess.
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `METAJEV_STORE` | `~/.metajev/decisions.db` | where decisions are recorded |
+| `METAJEV_PROVIDER` | `typesafe` | any spec `build_provider` accepts |
+| `METAJEV_POLICY` | `0.85,0.55` | the accept and review boundaries |
+| `JEV_API_KEY` | | credential for the endpoint |
+| `JEV_API_URL` | `https://api.typesafe.ai/v1/systemone` | the endpoint |
+
+Six tools are exposed: `decide`, `record_outcome`, `replay`, `calibrate`,
+`boundary_table`, and `store_summary`. The server's instructions tell the
+connecting agent that `replay` costs nothing and that outcomes are what make
+calibration possible, because an agent that does not know those two things will use
+the tools badly.
+
 ## Design notes
 
 **Why tags are not in the key.** Tags organise questions for policy authors. Two
