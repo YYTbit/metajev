@@ -19,6 +19,9 @@ The package is not on PyPI yet. Installing from the clone works today; `pip
 install "metajev @ git+https://github.com/YYTbit/metajev"` does the same thing
 without keeping the checkout around.
 
+A longer write-up of the reasoning is in
+[docs/why-decisions-and-policies-are-different.md](docs/why-decisions-and-policies-are-different.md).
+
 ## The problem
 
 A Jev-class model returns a distribution in a single forward pass and generates no
