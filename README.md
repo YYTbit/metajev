@@ -10,8 +10,14 @@ routing, and spending limits live in a policy that reads the record. Moving a
 threshold then costs a pass over stored numbers.
 
 ```
-pip install metajev
+git clone https://github.com/YYTbit/metajev
+cd metajev
+pip install -e .
 ```
+
+The package is not on PyPI yet. Installing from the clone works today; `pip
+install "metajev @ git+https://github.com/YYTbit/metajev"` does the same thing
+without keeping the checkout around.
 
 ## The problem
 
