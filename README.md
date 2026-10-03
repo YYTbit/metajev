@@ -288,6 +288,15 @@ refreshed; record an outcome and re-ask if the model changed.
 across decision models. metajev is complementary to routing: it records what a
 model answered and lets the action be recomputed later.
 
+Two plugins apply the same idea inside an agent harness:
+
+- [dsh-plugin-jev-compaction](https://github.com/YYTbit/dsh-plugin-jev-compaction)
+  scores each message with Jev before compacting, so relevance orders the context
+  instead of age, and keeps a receipt per message.
+- [dsh-plugin-jev-router](https://github.com/YYTbit/dsh-plugin-jev-router) asks one
+  choice question per turn to pick a model and effort level, and stores the full
+  distribution so a different cost preference can be applied afterwards.
+
 ## License
 
 MIT. Copyright YYTbit.
